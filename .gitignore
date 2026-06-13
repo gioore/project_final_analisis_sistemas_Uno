@@ -25,3 +25,6 @@ Homestead.yaml
 Thumbs.db
 # Local Pi runtime state
 .atl/
+
+# Word temp files
+~$*.docx
