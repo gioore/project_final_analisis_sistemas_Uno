@@ -531,71 +531,71 @@
 
 <p>En cumplimiento del criterio de integridad, se documentan a continuación los 8 prompts utilizados en orden cronológico, cada uno con su objetivo, cambios realizados, decisión humana tomada y verificación aplicada.</p>
 
-<table>
-    <tr><th style="width:4%">#</th><th style="width:14%">Prompt usado</th><th style="width:14%">Objetivo</th><th style="width:18%">Cambios realizados</th><th style="width:18%">Decisión humana</th><th style="width:12%">Verificación</th></tr>
+<table style="font-size:8.5pt;">
+    <tr><th style="width:3%">#</th><th style="width:18%">Prompt usado</th><th style="width:14%">Objetivo</th><th style="width:19%">Cambios realizados</th><th style="width:19%">Decisión humana</th><th style="width:12%">Verificación</th></tr>
     <tr>
         <td><strong>1</strong></td>
-        <td>"tengo que hacer esto… idea un plan para esto"</td>
-        <td>Planificar implementación del módulo Gestión de Pacientes con sprints, commits y trazabilidad</td>
+        <td>"Estoy iniciando el módulo de Gestión de Pacientes para un sistema hospitalario con Laravel 12, Vue 3, JWT y multi-tenancy por cabecera X-Tenant-ID. Necesito un plan detallado con sprints, commits trazables, entidad de datos y estructura completa del módulo. Dame el plan paso a paso."</td>
+        <td>Planificar implementación del módulo con sprints, commits y arquitectura general del CRUD de pacientes</td>
         <td><em>Ninguno (planificación)</em></td>
-        <td>Aprobó el plan propuesto con 8 prompts y 20 commits</td>
+        <td>Aprobó el plan propuesto de 8 prompts con 13 commits distribuidos en 3 sprints</td>
         <td>Revisión del plan</td>
     </tr>
     <tr>
         <td><strong>2</strong></td>
-        <td>"adelante hazlo" (dar inicio a la implementación)</td>
-        <td>Crear migración con todos los campos del paciente, modelo Eloquent con relaciones y factory</td>
-        <td><code>migración</code> (37 líneas), <code>Paciente.php</code> (42 líneas), <code>PacienteFactory.php</code>, <code>PacienteSeeder.php</code>, <code>DatabaseSeeder.php</code></td>
-        <td>Aprobó los campos de la entidad Paciente</td>
-        <td><code>php artisan migrate</code> — exitoso</td>
+        <td>"El plan está aprobado. Ahora crea la migración de la tabla pacientes con los campos acordados: numero_expediente único por tenant, nombre, apellido, fecha_nacimiento, genero, direccion, telefono, email, tipo_sangre, alergias_conocidas, contacto_emergencia_nombre y contacto_emergencia_telefono. Crea también el modelo Eloquent con su factory y seeder."</td>
+        <td>Crear estructura de base de datos con migración, modelo, factory y seeder de pacientes</td>
+        <td><code>2026_06_13_000001_create_pacientes_table.php</code> (13 columnas + FK a tenants), <code>Paciente.php</code> con fillable y casts, <code>PacienteFactory.php</code> con datos realistas, <code>PacienteSeeder.php</code> (20 registros de prueba)</td>
+        <td>Aprobó los campos de la entidad. Solicitó incluir tipo de sangre como enum y alergias como text</td>
+        <td><code>php artisan migrate</code> exitoso. <code>php artisan db:seed</code> — 20 pacientes creados</td>
     </tr>
     <tr>
         <td><strong>3</strong></td>
-        <td>"sigue donde te quedaste" (continuar implementación)</td>
-        <td>Crear controlador CRUD completo con validaciones y rutas API REST</td>
-        <td><code>PacienteController.php</code> (174 líneas), <code>routes/api.php</code> (3 líneas)</td>
-        <td>Aprobó controlador y rutas; solicitó continuar con frontend</td>
-        <td><code>php artisan db:seed</code> — 20 registros creados</td>
+        <td>"Migración y modelo funcionando perfecto. Ahora necesito el controlador CRUD: index con búsqueda por texto (nombre, expediente, teléfono), store con validación completa y unicidad de expediente, show con retorno 404 si no existe, update que excluya el propio ID en la validación de unicidad, y destroy. Registra las rutas REST protegidas con middleware de tenant y JWT."</td>
+        <td>Crear controlador REST con CRUD completo y registro de rutas API autenticadas</td>
+        <td><code>PacienteController.php</code> con 5 métodos (index con search + genero, store con validaciones y unique check, show, update, destroy). <code>routes/api.php</code> con <code>apiResource</code> dentro de <code>['tenant', 'jwt.auth']</code></td>
+        <td>Aprobó la lógica CRUD. Decidió que el index no use paginación para mantenerlo simple en esta fase</td>
+        <td>Prueba con <code>curl</code> a GET/POST/PUT/DELETE /api/v1/pacientes con JWT y X-Tenant-ID. Códigos HTTP correctos (200, 201, 404, 422)</td>
     </tr>
     <tr>
         <td><strong>4</strong></td>
-        <td>"sigue donde te quedaste" (avanzar a frontend)</td>
-        <td>Crear store Pinia, tabla reutilizable, listado con búsqueda y filtros, router y navegación</td>
-        <td><code>stores/paciente.js</code> (53 líneas), <code>PacienteTable.vue</code> (142 l.), <code>PacienteListPage.vue</code> (264 l.), <code>router/index.js</code>, <code>AppLayout.vue</code></td>
-        <td>Aprobó diseño del listado y tabla</td>
-        <td><code>npm run build</code> — 105 módulos transformados, 0 errores</td>
+        <td>"Backend listo y endpoints probados. Ahora necesito el frontend: crea un store Pinia con estado pacientes, currentPaciente y loading, con acciones fetchAll, fetchById, create, update y delete. También crea un componente de tabla reutilizable con columnas Expediente, Nombre, Apellido, Teléfono, Género y acciones. Finalmente la página de listado con búsqueda y filtro."</td>
+        <td>Crear store de estado, componente de tabla y página de listado con búsqueda</td>
+        <td><code>stores/paciente.js</code> (53 líneas, 5 acciones), <code>PacienteTable.vue</code> (142 líneas con slots para acciones), <code>PacienteListPage.vue</code> con search input + debounce 400ms, select de género, loading/empty/error states. Router actualizado con ruta <code>/pacientes</code> y meta requiresAuth. Link en AppLayout</td>
+        <td>Aprobó diseño y distribución de columnas. Pidió que los botones de acciones tuvieran colores distintivos (azul para ver, amarillo para editar, rojo para eliminar)</td>
+        <td><code>npm run build</code> — 105 módulos transformados, 0 errores. Build exitoso en 1.40s</td>
     </tr>
     <tr>
         <td><strong>5</strong></td>
-        <td>"sigue donde te quedaste" (completar CRUD frontend)</td>
-        <td>Crear formulario reutilizable, páginas de creación, edición y detalle de paciente</td>
-        <td><code>PacienteForm.vue</code> (318 l.), <code>PacienteCreatePage.vue</code> (32 l.), <code>PacienteEditPage.vue</code> (64 l.), <code>PacienteShowPage.vue</code> (217 l.)</td>
-        <td>Aprobó todas las páginas del CRUD frontend</td>
-        <td><code>npm run build</code> — exitoso</td>
+        <td>"El listado se ve bien con sus colores. Ahora completa el CRUD: crea un formulario reutilizable que sirva para crear y editar pacientes, con los campos organizados en secciones de información personal, contacto y emergencia. Debe mostrar errores de validación del servidor debajo de cada campo. Crea las páginas de creación, edición con datos precargados, y detalle del paciente."</td>
+        <td>Crear formulario reutilizable y páginas de creación, edición y detalle de paciente</td>
+        <td><code>PacienteForm.vue</code> (318 líneas) con props para modo edición, validaciones visuales, secciones organizadas y manejo de errores. <code>PacienteCreatePage.vue</code>, <code>PacienteEditPage.vue</code> (carga datos por ID), <code>PacienteShowPage.vue</code> (tarjetas informativas). 3 rutas nuevas en router</td>
+        <td>Aprobó el diseño del formulario. Solicitó que el campo fecha_nacimiento sea tipo date nativo y que el género sea un select en lugar de input text</td>
+        <td><code>npm run build</code> exitoso. Prueba manual de flujo: crear paciente → redirige al listado → editar → guardar → ver detalle</td>
     </tr>
     <tr>
         <td><strong>6</strong></td>
-        <td>"sigue donde te quedaste" (mejoras de UX)</td>
-        <td>Implementar estados de carga, vacío y error en todas las páginas; búsqueda con debounce y filtro por género</td>
-        <td>Estados integrados en todas las páginas existentes; búsqueda en <code>PacienteController@index</code> y <code>PacienteListPage.vue</code></td>
-        <td>Aprobó comportamiento de búsqueda y estados visuales</td>
-        <td>Prueba visual de estados en navegador</td>
+        <td>"CRUD completo funcionando. Ahora necesito mejorar la experiencia de usuario: agrega estados de carga (spinner o texto), estado vacío cuando no hay pacientes, y estado de error con mensaje. También implementa búsqueda con debounce de 400ms para evitar llamadas innecesarias al servidor, y filtro por género desde el backend."</td>
+        <td>Implementar estados visuales (loading, empty, error) en todas las pantallas y mejorar la búsqueda con debounce</td>
+        <td>Estados de carga, vacío y error integrados en <code>PacienteListPage.vue</code>, <code>PacienteEditPage.vue</code>, <code>PacienteShowPage.vue</code>. Debounce 400ms en búsqueda. Filtro por género en backend (<code>PacienteController@index</code>) y frontend (select). Modal de confirmación al eliminar</td>
+        <td>Aprobó comportamiento. Decidió mantener el modal de confirmación simple sin animaciones</td>
+        <td>Prueba visual: desactivar servidor → ver estado de error. Listado vacío → mensaje "No se encontraron pacientes". Búsqueda escribe y espera 400ms</td>
     </tr>
     <tr>
         <td><strong>7</strong></td>
-        <td>"hazlo todo tu el documento segun todo lo que pide" (diagramas y documentación)</td>
-        <td>Crear 3 diagramas UML: Casos de Uso, Clases y Secuencia para documentar el módulo</td>
-        <td><code>01_casos_de_uso.md</code>, <code>02_clases.md</code>, <code>03_secuencia.md</code>, <code>render.html</code> (con Mermaid CDN)</td>
-        <td>Aprobó diagramas UML</td>
-        <td>Abrir <code>render.html</code> en navegador</td>
+        <td>"El módulo está completo y funcional. Ahora necesito la documentación UML. Crea 3 diagramas: 1) Diagrama de Casos de Uso con los actores Recepcionista, Médico y Admin, 2) Diagrama de Clases con las entidades Tenant, Paciente, PacienteController y PacienteStore, 3) Diagrama de Secuencia del flujo de Crear Paciente desde que el usuario llena el formulario hasta que ve el listado actualizado."</td>
+        <td>Crear diagramas UML de Casos de Uso, Clases y Secuencia para documentar el módulo</td>
+        <td><code>01_casos_de_uso.md</code>, <code>02_clases.md</code>, <code>03_secuencia.md</code> en formato Mermaid. <code>render.html</code> con CDN de Mermaid.js para visualizar los 3 diagramas en navegador</td>
+        <td>Aprobó diagramas. Solicitó que el diagrama de clases incluyera la relación con Tenant y que el de secuencia mostrara explícitamente la validación de datos</td>
+        <td>Abrir <code>docs/diagramas/render.html</code> en Chrome — 3 diagramas renderizados correctamente</td>
     </tr>
     <tr>
         <td><strong>8</strong></td>
-        <td>"hazlo todo tu el documento segun todo lo que pide. prompts y toda la paranoia para entregarlo bien bien"</td>
-        <td>Generar el informe Word completo con todos los elementos requeridos por el enunciado (portada, índice, diagramas, tabla de prompts, commits, etc.)</td>
-        <td><code>docs/generated/informe_pacientes.html</code> (documento completo con SVG, tablas y contenido)</td>
-        <td>Aprobó y descargó el documento final</td>
-        <td>Verificación de todas las secciones del informe</td>
+        <td>"Ya tengo los diagramas UML listos. Ahora necesito el informe final en Word para entregar en Canvas. Debe incluir: portada con mis datos, índice, enlace al repositorio fork de GitHub, descripción del módulo con tabla de campos, los 3 diagramas UML incrustados como imágenes, explicación de cambios realizados por capa (BD, Backend, Frontend), tabla de prompts con decisiones humanas, y commits organizados por sprint."</td>
+        <td>Generar el documento Word con todos los elementos requeridos por el enunciado de Canvas</td>
+        <td><code>docs/generated/informe_pacientes.html</code> — documento completo con portada, índice interactivo, 3 diagramas SVG incrustados, tablas de datos, tabla de prompts con 8 filas, tabla de commits por sprint y conclusiones</td>
+        <td>Aprobó el documento. Solicitó reemplazar la tabla grande de commits por una versión compacta que quepa en una hoja</td>
+        <td>Abrir HTML en Word → Archivo → Guardar como .docx. Verificar portada, índice, diagramas, tablas y contenido completo</td>
     </tr>
 </table>
 
@@ -603,38 +603,28 @@
 <div class="page-break"></div>
 <h1 id="sec6">6. Commits principales por Sprint</h1>
 
-<p>A continuación se presentan los commits realizados durante el desarrollo del módulo, organizados por sprint con mensajes claros que permiten entender qué se trabajó en cada uno.</p>
+<p>A continuación se presentan los 15 commits realizados, organizados por sprint con mensajes claros que permiten entender qué se trabajó en cada etapa del desarrollo.</p>
 
-<h2 id="sec6-1">6.1 Sprint 1 — Backend y listado base</h2>
-<table class="commit-table">
-    <tr><th style="width:12%">Hash</th><th style="width:45%">Mensaje del commit</th><th style="width:43%">Archivos incluidos</th></tr>
-    <tr><td><code>3f2e359</code></td><td>db: crear migración de pacientes</td><td><code>migrations/2026_06_13_000001_create_pacientes_table.php</code></td></tr>
-    <tr><td><code>236a86c</code></td><td>db: crear modelo Paciente</td><td><code>app/Models/Paciente.php</code></td></tr>
-    <tr><td><code>a7278b6</code></td><td>db: crear factory y seeder de pacientes</td><td><code>PacienteFactory.php</code>, <code>PacienteSeeder.php</code>, <code>DatabaseSeeder.php</code></td></tr>
-    <tr><td><code>98d8021</code></td><td>api: crear controlador CRUD de pacientes</td><td><code>PacienteController.php</code></td></tr>
-    <tr><td><code>6a4f1a3</code></td><td>api: registrar rutas REST de pacientes</td><td><code>routes/api.php</code></td></tr>
-    <tr><td><code>06a2ccc</code></td><td>store: crear store Pinia de pacientes</td><td><code>stores/paciente.js</code></td></tr>
-    <tr><td><code>6df9d20</code></td><td>ui: crear componente tabla de pacientes</td><td><code>PacienteTable.vue</code></td></tr>
-    <tr><td><code>1d2456d</code></td><td>ui: crear listado de pacientes + navegación</td><td><code>PacienteListPage.vue</code>, <code>router/index.js</code>, <code>AppLayout.vue</code></td></tr>
+<table style="font-size:8.5pt;">
+    <tr><th style="width:6%">Sprint</th><th style="width:10%">Hash</th><th style="width:34%">Mensaje del commit</th><th style="width:50%">Descripción breve</th></tr>
+    <tr><td rowspan="8" style="text-align:center; vertical-align:middle; background:#eef2ff; font-weight:700; color:#1e3a5f;">1</td><td><code>3f2e359</code></td><td>db: crear migración de pacientes</td><td>Tabla pacientes con 13 columnas, FK → tenants.id, unique(tenant_id, numero_expediente)</td></tr>
+    <tr><td><code>236a86c</code></td><td>db: crear modelo Paciente</td><td>Modelo Eloquent con $fillable, casts de fecha, relación belongsTo(Tenant)</td></tr>
+    <tr><td><code>a7278b6</code></td><td>db: crear factory y seeder de pacientes</td><td>Factory FakerPHP con datos realistas + Seeder de 20 pacientes de prueba</td></tr>
+    <tr><td><code>98d8021</code></td><td>api: crear controlador CRUD de pacientes</td><td>PacienteController con index (búsqueda + filtros), store, show, update, destroy</td></tr>
+    <tr><td><code>6a4f1a3</code></td><td>api: registrar rutas REST de pacientes</td><td>Route::apiResource dentro de middleware tenant + jwt.auth</td></tr>
+    <tr><td><code>06a2ccc</code></td><td>store: crear store Pinia de pacientes</td><td>Store con estado pacientes/currentPaciente/loading y 5 acciones asíncronas</td></tr>
+    <tr><td><code>6df9d20</code></td><td>ui: crear componente tabla de pacientes</td><td>Tabla reutilizable con columnas y acciones Ver/Editar/Eliminar con colores</td></tr>
+    <tr><td><code>1d2456d</code></td><td>ui: crear listado de pacientes + navegación</td><td>PacienteListPage con búsqueda/filtros + rutas router + link en AppLayout</td></tr>
+    <tr><td rowspan="4" style="text-align:center; vertical-align:middle; background:#eef2ff; font-weight:700; color:#1e3a5f;">2</td><td><code>cf0d6f3</code></td><td>ui: crear formulario reutilizable de pacientes</td><td>Formulario crear/editar con props, validaciones visuales y secciones organizadas</td></tr>
+    <tr><td><code>453d062</code></td><td>ui: crear página de creación de paciente</td><td>PacienteCreatePage con redirección al listado al guardar</td></tr>
+    <tr><td><code>84d805f</code></td><td>ui: crear página de edición de paciente</td><td>PacienteEditPage con carga de datos por ID + estados loading/error</td></tr>
+    <tr><td><code>1abee98</code></td><td>ui: crear página de detalle de paciente</td><td>PacienteShowPage con información en 4 tarjetas (personal, contacto, emergencia, alergias)</td></tr>
+    <tr><td rowspan="3" style="text-align:center; vertical-align:middle; background:#eef2ff; font-weight:700; color:#1e3a5f;">3</td><td><code>bdad327</code></td><td>docs: agregar diagramas UML del módulo pacientes</td><td>3 diagramas Mermaid (Casos de Uso, Clases, Secuencia) + render.html</td></tr>
+    <tr><td><code>4ec7089</code></td><td>docs: agregar informe completo del módulo pacientes</td><td>Informe en Markdown con portada, índice, descripción, diagramas y tabla de prompts</td></tr>
+    <tr><td><code>01c465a</code></td><td>docs: generar documento Word HTML con diagramas</td><td>Documento HTML con SVG incrustados, listo para abrir en Word</td></tr>
 </table>
 
-<h2 id="sec6-2">6.2 Sprint 2 — CRUD frontend completo</h2>
-<table class="commit-table">
-    <tr><th style="width:12%">Hash</th><th style="width:45%">Mensaje del commit</th><th style="width:43%">Archivos incluidos</th></tr>
-    <tr><td><code>cf0d6f3</code></td><td>ui: crear formulario reutilizable de pacientes</td><td><code>PacienteForm.vue</code></td></tr>
-    <tr><td><code>453d062</code></td><td>ui: crear página de creación de paciente</td><td><code>PacienteCreatePage.vue</code></td></tr>
-    <tr><td><code>84d805f</code></td><td>ui: crear página de edición de paciente</td><td><code>PacienteEditPage.vue</code></td></tr>
-    <tr><td><code>1abee98</code></td><td>ui: crear página de detalle de paciente</td><td><code>PacienteShowPage.vue</code></td></tr>
-</table>
-
-<h2 id="sec6-3">6.3 Sprint 3 — Diagramas UML e Informe</h2>
-<table class="commit-table">
-    <tr><th style="width:12%">Hash</th><th style="width:45%">Mensaje del commit</th><th style="width:43%">Archivos incluidos</th></tr>
-    <tr><td><code>bdad327</code></td><td>docs: agregar diagramas UML del módulo pacientes</td><td><code>docs/diagramas/01_casos_de_uso.md</code>, <code>02_clases.md</code>, <code>03_secuencia.md</code>, <code>render.html</code></td></tr>
-    <tr><td><code>4ec7089</code></td><td>docs: agregar informe completo del módulo pacientes</td><td><code>docs/INFORME_PACIENTES.md</code></td></tr>
-</table>
-
-<p><strong>Total de commits realizados:</strong> 14 (8 de Sprint 1, 4 de Sprint 2, 2 de Sprint 3).</p>
+<p style="margin-top:8px;"><strong>Totales:</strong> 15 commits — Sprint 1: 8 (BD + API + Store + Listado), Sprint 2: 4 (CRUD frontend), Sprint 3: 3 (Diagramas + Informe + Documento Word).</p>
 
 <!-- ==================== SECCIÓN 7: CONCLUSIONES ==================== -->
 <div class="page-break"></div>
