@@ -30,11 +30,9 @@ class PacienteController extends Controller
             $query->where('genero', $request->string('genero'));
         }
 
-        $pacientes = $query->orderBy('created_at', 'desc')->get();
+        $pacientes = $query->orderBy('created_at', 'desc')->paginate(15);
 
-        return response()->json([
-            'data' => $pacientes,
-        ]);
+        return response()->json($pacientes);
     }
 
     public function store(Request $request): JsonResponse
@@ -69,8 +67,8 @@ class PacienteController extends Controller
         }
 
         $paciente = Paciente::query()->create([
-            'tenant_id' => $tenant->id,
             ...$validated,
+            'tenant_id' => $tenant->id,
         ]);
 
         return response()->json([

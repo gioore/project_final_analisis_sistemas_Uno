@@ -134,3 +134,83 @@ php artisan test
 ## Entrega esperada
 
 El estudiante debe trabajar sobre su propio fork del repositorio y entregar en Canvas el enlace al repositorio forkeado, junto con una breve descripción del módulo implementado y los commits principales que evidencian su avance.
+
+---
+
+## MÓDULO 5 — GESTIÓN DE PACIENTES (Gerson Giovanni Orellana Véliz — 1890-23-7082)
+
+### Cambios realizados
+
+**Base de datos**
+- Migración `2026_06_13_000001_create_pacientes_table.php` con 13 campos, FK a `tenants.id` y unique compuesto `(tenant_id, numero_expediente)`
+- Modelo `Paciente.php` con casts, `$fillable` y relación `belongsTo(Tenant)`
+- `PacienteFactory.php` y `PacienteSeeder.php` (20 pacientes de ejemplo)
+- `database/seeders/DatabaseSeeder.php` actualizado
+
+**Backend (API)**
+- `PacienteController.php` — CRUD completo con búsqueda (`?search=`), filtro por género (`?genero=`), paginación (15/page) y validación de unicidad de expediente
+- Ruta `apiResource('/pacientes', PacienteController::class)` en `routes/api.php` bajo middleware `tenant` + `jwt.auth`
+
+**Frontend (Vue 3 + Pinia)**
+- Store `paciente.js` con acciones `fetchAll`, `fetchById`, `create`, `update`, `delete` y estado de paginación
+- `PacienteForm.vue` — formulario reutilizable con callback `onSubmit` y validaciones visuales
+- `PacienteTable.vue` — tabla con acciones Ver/Editar/Eliminar
+- `PacienteListPage.vue` — listado con búsqueda (debounce 400ms), filtro por género, modal de confirmación y estados loading/error/empty
+- `PacienteCreatePage.vue`, `PacienteEditPage.vue`, `PacienteShowPage.vue`
+- `AppLayout.vue` — navegación condicional (login/logout)
+- `axios.js` — interceptor 401 que redirige a login si el token expira
+- `router/index.js` — 4 rutas protegidas + catch-all 404
+
+**Correcciones**
+- Middleware `JwtAuth.php` renombrado a `JwtAuthMiddleware.php` (evita conflicto con `tymon/jwt-auth`)
+- Alias `jwt.auth` actualizado en `bootstrap/app.php`
+
+### Cómo probar
+
+#### Credenciales de prueba
+
+| Campo | Valor |
+|-------|-------|
+| Tenant ID | `00000000-0000-4000-8000-000000000001` |
+| Email | `admin@test.com` |
+| Contraseña | `password` |
+
+#### Funcionalidades
+
+| Funcionalidad | Cómo probarla |
+|--------------|---------------|
+| Listar pacientes | Clic en "Pacientes" en el menú |
+| Buscar pacientes | Escribir en el campo de búsqueda (nombre, expediente o teléfono) |
+| Filtrar por género | Usar el selector desplegable |
+| Crear paciente | Clic en "+ Nuevo paciente", llenar formulario y guardar |
+| Ver detalle | Clic en "Ver" en la tabla |
+| Editar paciente | Clic en "Editar", modificar y guardar |
+| Eliminar paciente | Clic en "Eliminar" y confirmar modal |
+| Paginación | Con 20+ pacientes, navegar entre páginas |
+| Cerrar sesión | Clic en "Cerrar sesión" en el menú |
+
+#### API endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/v1/pacientes` | Listar (`?search=`, `?genero=`, `?page=`) |
+| `POST` | `/api/v1/pacientes` | Crear |
+| `GET` | `/api/v1/pacientes/{id}` | Detalle |
+| `PUT` | `/api/v1/pacientes/{id}` | Actualizar |
+| `DELETE` | `/api/v1/pacientes/{id}` | Eliminar |
+
+Ejemplo con curl:
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "X-Tenant-ID: 00000000-0000-4000-8000-000000000001" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@test.com","password":"password"}'
+```
+
+#### Tests
+
+```bash
+php artisan test --filter=PacienteTest
+```
+
+Salida esperada: 11 tests, 24 assertions, todos PASS.

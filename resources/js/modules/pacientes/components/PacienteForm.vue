@@ -161,9 +161,11 @@ const props = defineProps({
         type: Object,
         default: null,
     },
+    onSubmit: {
+        type: Function,
+        required: true,
+    },
 });
-
-const emit = defineEmits(['submit']);
 
 const isEditing = !!props.paciente;
 
@@ -211,7 +213,7 @@ async function handleSubmit() {
     loading.value = true;
 
     try {
-        await emit('submit', { ...form.value });
+        await props.onSubmit({ ...form.value });
     } catch (error) {
         const response = error?.response?.data;
 

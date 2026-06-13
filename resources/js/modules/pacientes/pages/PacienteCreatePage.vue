@@ -1,7 +1,7 @@
 <template>
     <section class="create">
         <h2 class="create__title">Nuevo paciente</h2>
-        <PacienteForm @submit="handleCreate" />
+        <PacienteForm :on-submit="handleCreate" />
     </section>
 </template>
 

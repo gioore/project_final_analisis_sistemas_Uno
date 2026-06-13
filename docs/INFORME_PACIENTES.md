@@ -2,7 +2,7 @@
 
 ---
 
-**Universidad:** [Nombre de la Universidad]
+**Universidad:** Universidad Mariano Gálvez de Guatemala
 **Curso:** Análisis de Sistemas II
 **Estudiante:** Gerson Giovanni Orellana Véliz
 **Carné:** 1890-23-7082
@@ -22,6 +22,7 @@
 4. Explicación de los cambios realizados
 5. Registro de prompts utilizados
 6. Commits principales por Sprint
+7. Conclusiones
 
 ---
 
@@ -78,8 +79,8 @@ Se implementó un módulo completo de **Gestión de Pacientes** que permite real
 
 ### 3.1 Diagrama de Casos de Uso
 
-```
-[Incluir imagen desde docs/diagramas/render.html — Diagrama 1]
+```mermaid
+{incluir diagrama desde docs/diagramas/01_casos_de_uso.md}
 ```
 
 **Actores:**
@@ -89,8 +90,8 @@ Se implementó un módulo completo de **Gestión de Pacientes** que permite real
 
 ### 3.2 Diagrama de Clases
 
-```
-[Incluir imagen desde docs/diagramas/render.html — Diagrama 2]
+```mermaid
+{incluir diagrama desde docs/diagramas/02_clases.md}
 ```
 
 **Clases principales:**
@@ -102,8 +103,8 @@ Se implementó un módulo completo de **Gestión de Pacientes** que permite real
 
 ### 3.3 Diagrama de Secuencia — Crear Paciente
 
-```
-[Incluir imagen desde docs/diagramas/render.html — Diagrama 3]
+```mermaid
+{incluir diagrama desde docs/diagramas/03_secuencia.md}
 ```
 
 **Flujo:**
@@ -163,6 +164,8 @@ Se implementó un módulo completo de **Gestión de Pacientes** que permite real
 | 6 | "mejora estados de carga y búsqueda" | Mejorar UX con estados visuales | Loading, empty, error states en todas las páginas. Búsqueda con debounce y filtro por género | Ya incluido en páginas existentes | ✅ Aprobó comportamiento | Prueba visual |
 | 7 | "crea diagramas UML" | Documentación visual del módulo | 3 diagramas: Casos de Uso, Clases, Secuencia en formato Mermaid | `docs/diagramas/*.md`, `render.html` | ✅ Revisó y aprobó | Abrir render.html en navegador |
 | 8 | "genera el informe Word completo" | Entregable final para Canvas | Documento completo con portada, índice, contenido, diagramas y tabla de prompts | `docs/INFORME_PACIENTES.md` | ✅ Descargó y subió a Canvas | Verificación de contenido |
+| 9 | "revisa y corrige bugs del módulo" | Corregir errores de propagación, store y seguridad | Se corrigieron 5 bugs críticos: emit async, tenant_id overwrite, store error re-throw, redirect-on-error, cleanup debounce | `PacienteForm.vue`, `PacienteCreatePage.vue`, `PacienteEditPage.vue`, `paciente.js`, `PacienteController.php`, `PacienteListPage.vue` | ✅ Aprobó correcciones | Pruebas funcionales manuales |
+| 10 | "agrega tests del módulo Pacientes" | Validar API CRUD con tests automatizados | Tests de creación, listado, búsqueda, detalle, edición y eliminación de pacientes con JWT y tenant | `tests/Feature/PacienteTest.php` | ✅ Aprobó | `php artisan test` todos pasan |
 
 ---
 
@@ -198,6 +201,17 @@ Se implementó un módulo completo de **Gestión de Pacientes** que permite real
 | # | Hash | Mensaje | Archivos |
 |---|------|---------|----------|
 | 1 | `bdad327` | `docs: agregar diagramas UML del módulo pacientes` | `docs/diagramas/*` (4 archivos) |
+
+### Sprint 4 — Correcciones, tests y mejoras
+
+| # | Hash | Mensaje | Archivos |
+|---|------|---------|----------|
+| 1 | *(pendiente)* | `fix: corregir propagación de errores en formulario` | `PacienteForm.vue`, `PacienteCreatePage.vue`, `PacienteEditPage.vue` |
+| 2 | *(pendiente)* | `fix: corregir orden de asignación de tenant_id` | `PacienteController.php` |
+| 3 | *(pendiente)* | `fix: agregar re-lanzamiento de errores en store` | `stores/paciente.js` |
+| 4 | *(pendiente)* | `feat: agregar paginación a index de pacientes` | `PacienteController.php`, `stores/paciente.js` |
+| 5 | *(pendiente)* | `feat: agregar interceptor 401 y logout en frontend` | `axios.js`, `AppLayout.vue`, `router/index.js` |
+| 6 | *(pendiente)* | `test: crear tests de feature para Pacientes CRUD` | `tests/Feature/PacienteTest.php` |
 
 ---
 

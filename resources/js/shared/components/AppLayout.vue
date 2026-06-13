@@ -8,12 +8,15 @@
                 <router-link class="layout__link" to="/">
                     Inicio
                 </router-link>
-                <router-link class="layout__link" to="/pacientes">
+                <router-link v-if="isAuthenticated" class="layout__link" to="/pacientes">
                     Pacientes
                 </router-link>
-                <router-link class="layout__link" to="/login">
+                <router-link v-if="!isAuthenticated" class="layout__link" to="/login">
                     Acceso
                 </router-link>
+                <a v-if="isAuthenticated" class="layout__link layout__link--logout" @click.prevent="logout" href="#">
+                    Cerrar sesión
+                </a>
             </nav>
         </header>
         <main class="layout__main">
@@ -23,6 +26,19 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const isAuthenticated = computed(() => !!localStorage.getItem('auth_token'));
+
+function logout() {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('tenant_id');
+    localStorage.removeItem('auth_user');
+    router.push('/login');
+}
 </script>
 
 <style scoped>
@@ -61,6 +77,11 @@
 
 .layout__link.router-link-active {
     color: #2563eb;
+}
+
+.layout__link--logout {
+    cursor: pointer;
+    color: #b91c1c;
 }
 
 .layout__main {

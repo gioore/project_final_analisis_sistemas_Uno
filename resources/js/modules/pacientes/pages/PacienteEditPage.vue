@@ -4,7 +4,7 @@
         <div v-else-if="errorMessage" class="edit__error">{{ errorMessage }}</div>
         <template v-else>
             <h2 class="edit__title">Editar paciente: {{ store.currentPaciente?.nombre }} {{ store.currentPaciente?.apellido }}</h2>
-            <PacienteForm :paciente="store.currentPaciente" @submit="handleUpdate" />
+            <PacienteForm :paciente="store.currentPaciente" :on-submit="handleUpdate" />
         </template>
     </section>
 </template>

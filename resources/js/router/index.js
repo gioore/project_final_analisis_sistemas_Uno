@@ -45,6 +45,11 @@ const router = createRouter({
             component: PacienteEditPage,
             meta: { requiresAuth: true },
         },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            redirect: '/',
+        },
     ],
 });
 

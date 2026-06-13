@@ -6,6 +6,12 @@ export const usePacienteStore = defineStore('paciente', {
         pacientes: [],
         currentPaciente: null,
         loading: false,
+        pagination: {
+            current_page: 1,
+            last_page: 1,
+            total: 0,
+            per_page: 15,
+        },
     }),
     actions: {
         async fetchAll(params = {}) {
@@ -15,8 +21,16 @@ export const usePacienteStore = defineStore('paciente', {
                 const { data } = await api.get('/pacientes', { params });
 
                 this.pacientes = data.data;
+                this.pagination = {
+                    current_page: data.current_page ?? 1,
+                    last_page: data.last_page ?? 1,
+                    total: data.total ?? 0,
+                    per_page: data.per_page ?? 15,
+                };
 
                 return data.data;
+            } catch (error) {
+                throw error;
             } finally {
                 this.loading = false;
             }
@@ -30,6 +44,8 @@ export const usePacienteStore = defineStore('paciente', {
                 this.currentPaciente = data.data;
 
                 return data.data;
+            } catch (error) {
+                throw error;
             } finally {
                 this.loading = false;
             }

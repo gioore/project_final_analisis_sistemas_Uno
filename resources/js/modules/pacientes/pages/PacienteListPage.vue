@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { usePacienteStore } from '@/modules/pacientes/stores/paciente';
 import PacienteTable from '@/modules/pacientes/components/PacienteTable.vue';
 
@@ -73,6 +73,10 @@ let searchTimeout = null;
 
 onMounted(async () => {
     await loadPacientes();
+});
+
+onUnmounted(() => {
+    clearTimeout(searchTimeout);
 });
 
 async function loadPacientes() {
