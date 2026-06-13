@@ -214,3 +214,9 @@ php artisan test --filter=PacienteTest
 ```
 
 Salida esperada: 11 tests, 24 assertions, todos PASS.
+
+### Capturas del proyecto
+
+![Captura levantando el proyecto](docs/Captura%20levantando%20el%20proyecto.png)
+
+![Captura del módulo](docs/Captura%20del%20modulo.png)
